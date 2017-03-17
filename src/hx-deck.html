@@ -83,8 +83,9 @@
               card.style.transition = 'transform 0.5s ease-in-out';
               card.style.transform = 'translateX(0px)';
             } else {
+              const rotation = 12 + this.currentIndex * 2;
               card.style.transition = 'transform 0.2s ease-in-out';
-              card.style.transform = 'translateX(50%) rotate(20deg)';
+              card.style.transform = `translateX(50%) rotate(${rotation}deg)`;
               this.currentIndex -= 1;
             }
             break;
