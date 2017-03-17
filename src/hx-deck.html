@@ -1,5 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/polymer/lib/mixins/gesture-event-listeners.html">
+<link rel="import" href="../bower_components/polymer/lib/elements/dom-repeat.html">
 <link rel="import" href="hx-card.html">
 
 <dom-module id="hx-deck">
@@ -18,30 +19,40 @@
       
       hx-card {
         position: absolute;
+        transform-origin: bottom left;
         /*transition: transform 0.1s ease-in-out;*/
-      }
-      
-      hx-card:nth-child(2n) {
-        /*transform: translateX(50%) rotate(20deg);*/
-        transform-origin: bottom left;
-      }
-      
-      hx-card:nth-child(3n) {
-        transform: translateX(50%) rotate(25deg);
-        transform-origin: bottom left;
       }
     </style>
 
     <div class="deck" on-track="handleTrack">
-      <hx-card></hx-card>
+      <template is="dom-repeat" items="[[cards]]">
+        <hx-card></hx-card>
+      </template>
       <hx-card id="current"></hx-card>
-      <hx-card></hx-card>
     </div>
   </template>
 
   <script>
     class HxDeck extends Polymer.GestureEventListeners(Polymer.Element) {
       static get is() { return 'hx-deck'; }
+
+      static get properties() {
+        return {
+          cards: {
+            type: Array,
+            value: () => [1, 2, 3, 4]
+          }
+        }
+      }
+
+      ready() {
+        super.ready();
+        this.currentIndex = this.cards.length - 1;
+      }
+
+      get currentCard() {
+        return this.$.current;
+      }
 
       handleTrack(e) {
         switch (e.detail.state) {
@@ -53,8 +64,14 @@
             this.move(e.detail.dx);
             break;
           case 'end':
-            this.$.current.style.transition = 'transform 0.5s ease-in-out';
-            this.$.current.style.transform = 'translateX(0px)';
+
+            if (e.detail.dx < this.cardWidth / 2) {
+              this.$.current.style.transition = 'transform 0.5s ease-in-out';
+              this.$.current.style.transform = 'translateX(0px)';
+            } else {
+              this.$.current.style.transition = 'transform 0.2s ease-in-out';
+              this.$.current.style.transform = 'translateX(50%) rotate(20deg)';
+            }
             break;
         }
         e.preventDefault();
