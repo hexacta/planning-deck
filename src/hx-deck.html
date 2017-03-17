@@ -92,6 +92,82 @@
         }
       }
 
+      startDrag(e) {
+        const targetIndex = e.target.cardIndex;
+
+        const toLeft = targetIndex && targetIndex > this.currentIndex;
+        const toRight = !toLeft;
+        const emptyDeck = this.currentIndex < 0;
+
+        if (toRight && emptyDeck) {
+          return;
+        }
+
+        const draggingIndex = toLeft ? this.curentIndex + 1 : this.currentIndex;
+
+        this.draggingCard = this.shadowRoot.querySelector(`.deck hx-card:nth-child(${draggingIndex + 1})`);
+        this.draggingDirection = toLeft ? "left" : "right";
+        this.cardWidth = this.draggingCard.getBoundingClientRect().width;
+        this.draggingCard.style.transition = '';
+      }
+
+      drag(e) {
+        if (!this.draggingCard) return;
+
+        const dx = e.detail.dx;
+        if (this.draggingDirection === "right") {
+          if (dx < this.cardWidth / 2) {
+            this.draggingCard.style.transform = `translateX(${dx}px)`;
+          } else {
+            const hdx = dx - this.cardWidth / 2;
+            const pdx = hdx / this.cardWidth;
+            const rotation = pdx * 90;
+            this.draggingCard.style.transform = `translateX(50%) rotate(${rotation}deg)`;
+          }
+        } else {
+          const threshold = (this.cardWidth * (12 + (this.currentIndex + 1) * 2) / 90);
+          if (dx < -threshold) {
+            // const rotation = 12 + this.currentIndex * 2;
+            const pdx = -dx / threshold;
+            const rotation = (12 + (this.currentIndex + 1) * 2) * pdx * 90;
+            this.draggingCard.style.transform = `translateX(50%) rotate(${rotation}deg)`;
+          } else {
+            const pdx = (this.cardWidth / 2) - (threshold + dx);
+            this.draggingCard.style.transform = `translateX(${pdx}px)`;
+          }
+
+        }
+      }
+
+      stopDrag(e) {
+        if (!this.draggingCard) return;
+
+        if (this.draggingDirection === "right") {
+          if (e.detail.dx < this.cardWidth / 2) {
+            this.draggingCard.style.transition = 'transform 0.5s ease-in-out';
+            this.draggingCard.style.transform = 'translateX(0px)';
+          } else {
+            const rotation = 12 + this.currentIndex * 2;
+            this.draggingCard.style.transition = 'transform 0.2s ease-in-out';
+            this.draggingCard.style.transform = `translateX(50%) rotate(${rotation}deg)`;
+            this.currentIndex -= 1;
+          }
+        } else {
+          if (e.detail.dx < -this.cardWidth / 2) {
+            const rotation = 12 + this.currentIndex * 2;
+            this.draggingCard.style.transition = 'transform 0.2s ease-in-out';
+            this.draggingCard.style.transform = `translateX(50%) rotate(${rotation}deg)`;
+          } else {
+            this.draggingCard.style.transition = 'transform 0.5s ease-in-out';
+            this.draggingCard.style.transform = 'translateX(0px)';
+            this.currentIndex += 1;
+          }
+        }
+
+        this.draggingDirection = null;
+        this.draggingCard = null;
+      }
+
     }
 
     window.requestAnimationFramePromise = _ => new Promise(requestAnimationFrame);
