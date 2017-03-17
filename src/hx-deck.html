@@ -26,9 +26,8 @@
 
     <div class="deck" on-track="handleTrack">
       <template is="dom-repeat" items="[[cards]]">
-        <hx-card></hx-card>
+        <hx-card>[[item]]</hx-card>
       </template>
-      <hx-card id="current"></hx-card>
     </div>
   </template>
 
@@ -47,18 +46,19 @@
 
       ready() {
         super.ready();
-        this.currentIndex = this.cards.length - 1;
+        this.currentIndex = this.cards.length;
       }
 
       get currentCard() {
-        return this.$.current;
+        return this.shadowRoot.querySelector(`.deck hx-card:nth-child(${this.currentIndex})`);
       }
 
       handleTrack(e) {
+        if (!this.currentIndex) return;
         switch (e.detail.state) {
           case 'start':
-            this.cardWidth = this.$.current.getBoundingClientRect().width;
-            this.$.current.style.transition = '';
+            this.cardWidth = this.currentCard.getBoundingClientRect().width;
+            this.currentCard.style.transition = '';
             break;
           case 'track':
             this.move(e.detail.dx);
@@ -66,11 +66,12 @@
           case 'end':
 
             if (e.detail.dx < this.cardWidth / 2) {
-              this.$.current.style.transition = 'transform 0.5s ease-in-out';
-              this.$.current.style.transform = 'translateX(0px)';
+              this.currentCard.style.transition = 'transform 0.5s ease-in-out';
+              this.currentCard.style.transform = 'translateX(0px)';
             } else {
-              this.$.current.style.transition = 'transform 0.2s ease-in-out';
-              this.$.current.style.transform = 'translateX(50%) rotate(20deg)';
+              this.currentCard.style.transition = 'transform 0.2s ease-in-out';
+              this.currentCard.style.transform = 'translateX(50%) rotate(20deg)';
+              this.currentIndex -= 1;
             }
             break;
         }
@@ -80,12 +81,12 @@
 
       move(dx) {
         if (dx < this.cardWidth / 2) {
-          this.$.current.style.transform = `translateX(${dx}px)`;
+          this.currentCard.style.transform = `translateX(${dx}px)`;
         } else {
           const hdx = dx - this.cardWidth / 2;
           const pdx = hdx / this.cardWidth;
           const rotation = pdx * 90;
-          this.$.current.style.transform = `translateX(50%) rotate(${rotation}deg)`;
+          this.currentCard.style.transform = `translateX(50%) rotate(${rotation}deg)`;
         }
       }
 
