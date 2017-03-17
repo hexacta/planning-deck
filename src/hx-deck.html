@@ -54,7 +54,6 @@
       }
 
       handleTrack(e) {
-        if (this.currentIndex < 0) return;
         const dx = e.detail.dx;
 
         let card = this.currentCard;
@@ -80,7 +79,6 @@
             }
             break;
           case 'end':
-
             if (e.detail.dx < this.cardWidth / 2) {
               card.style.transition = 'transform 0.5s ease-in-out';
               card.style.transform = 'translateX(0px)';
@@ -91,8 +89,6 @@
             }
             break;
         }
-        e.preventDefault();
-        e.stopPropagation();
       }
 
     }
