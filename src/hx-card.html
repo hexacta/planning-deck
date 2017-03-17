@@ -1,0 +1,28 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+<dom-module id="hx-card">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        height: 300px;
+        width: 200px;
+        background: green;
+        border: solid 3px black;
+
+        padding: 10px;
+      }
+    </style>
+
+    <div>
+    </div>
+  </template>
+
+  <script>
+    class HxCard extends Polymer.Element {
+      static get is() { return 'hx-card'; }
+    }
+
+    window.customElements.define(HxCard.is, HxCard);
+  </script>
+</dom-module>
