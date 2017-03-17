@@ -46,6 +46,7 @@
       handleTrack(e) {
         switch (e.detail.state) {
           case 'start':
+            this.cardWidth = this.$.current.getBoundingClientRect().width;
             this.$.current.style.transition = '';
             break;
           case 'track':
@@ -61,7 +62,14 @@
       }
 
       move(dx) {
-        this.$.current.style.transform = `translateX(${dx}px)`;
+        if (dx < this.cardWidth / 2) {
+          this.$.current.style.transform = `translateX(${dx}px)`;
+        } else {
+          const hdx = dx - this.cardWidth / 2;
+          const pdx = hdx / this.cardWidth;
+          const rotation = pdx * 90;
+          this.$.current.style.transform = `translateX(50%) rotate(${rotation}deg)`;
+        }
       }
 
 
