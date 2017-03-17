@@ -26,7 +26,7 @@
 
     <div class="deck" on-track="handleTrack">
       <template is="dom-repeat" items="[[cards]]">
-        <hx-card>[[item]]</hx-card>
+        <hx-card card-index="[[index]]">[[item]]</hx-card>
       </template>
     </div>
   </template>
@@ -46,31 +46,47 @@
 
       ready() {
         super.ready();
-        this.currentIndex = this.cards.length;
+        this.currentIndex = this.cards.length - 1;
       }
 
       get currentCard() {
-        return this.shadowRoot.querySelector(`.deck hx-card:nth-child(${this.currentIndex})`);
+        return this.shadowRoot.querySelector(`.deck hx-card:nth-child(${this.currentIndex + 1})`);
       }
 
       handleTrack(e) {
-        if (!this.currentIndex) return;
+        if (this.currentIndex < 0) return;
+        const dx = e.detail.dx;
+
+        let card = this.currentCard;
+
         switch (e.detail.state) {
           case 'start':
-            this.cardWidth = this.currentCard.getBoundingClientRect().width;
-            this.currentCard.style.transition = '';
+            const targetIndex = e.target.cardIndex;
+            if (targetIndex && targetIndex > this.currentIndex) {
+              this.currentIndex += 1;
+            }
+            card = this.currentCard;
+            this.cardWidth = card.getBoundingClientRect().width;
+            card.style.transition = '';
             break;
           case 'track':
-            this.move(e.detail.dx);
+            if (dx < this.cardWidth / 2) {
+              card.style.transform = `translateX(${dx}px)`;
+            } else {
+              const hdx = dx - this.cardWidth / 2;
+              const pdx = hdx / this.cardWidth;
+              const rotation = pdx * 90;
+              card.style.transform = `translateX(50%) rotate(${rotation}deg)`;
+            }
             break;
           case 'end':
 
             if (e.detail.dx < this.cardWidth / 2) {
-              this.currentCard.style.transition = 'transform 0.5s ease-in-out';
-              this.currentCard.style.transform = 'translateX(0px)';
+              card.style.transition = 'transform 0.5s ease-in-out';
+              card.style.transform = 'translateX(0px)';
             } else {
-              this.currentCard.style.transition = 'transform 0.2s ease-in-out';
-              this.currentCard.style.transform = 'translateX(50%) rotate(20deg)';
+              card.style.transition = 'transform 0.2s ease-in-out';
+              card.style.transform = 'translateX(50%) rotate(20deg)';
               this.currentIndex -= 1;
             }
             break;
@@ -78,18 +94,6 @@
         e.preventDefault();
         e.stopPropagation();
       }
-
-      move(dx) {
-        if (dx < this.cardWidth / 2) {
-          this.currentCard.style.transform = `translateX(${dx}px)`;
-        } else {
-          const hdx = dx - this.cardWidth / 2;
-          const pdx = hdx / this.cardWidth;
-          const rotation = pdx * 90;
-          this.currentCard.style.transform = `translateX(50%) rotate(${rotation}deg)`;
-        }
-      }
-
 
     }
 
