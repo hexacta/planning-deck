@@ -44,13 +44,13 @@
         }
       }
 
+      getCard(index) {
+        return this.shadowRoot.querySelector(`.deck hx-card:nth-child(${index + 1})`);
+      }
+
       ready() {
         super.ready();
         this.currentIndex = this.cards.length - 1;
-      }
-
-      get currentCard() {
-        return this.shadowRoot.querySelector(`.deck hx-card:nth-child(${this.currentIndex + 1})`);
       }
 
       handleTrack(e) {
@@ -60,34 +60,13 @@
 
         switch (e.detail.state) {
           case 'start':
-            const targetIndex = e.target.cardIndex;
-            if (targetIndex && targetIndex > this.currentIndex) {
-              this.currentIndex += 1;
-            }
-            card = this.currentCard;
-            this.cardWidth = card.getBoundingClientRect().width;
-            card.style.transition = '';
+            this.startDrag(e);
             break;
           case 'track':
-            if (dx < this.cardWidth / 2) {
-              card.style.transform = `translateX(${dx}px)`;
-            } else {
-              const hdx = dx - this.cardWidth / 2;
-              const pdx = hdx / this.cardWidth;
-              const rotation = pdx * 90;
-              card.style.transform = `translateX(50%) rotate(${rotation}deg)`;
-            }
+            this.drag(e);
             break;
           case 'end':
-            if (e.detail.dx < this.cardWidth / 2) {
-              card.style.transition = 'transform 0.5s ease-in-out';
-              card.style.transform = 'translateX(0px)';
-            } else {
-              const rotation = 12 + this.currentIndex * 2;
-              card.style.transition = 'transform 0.2s ease-in-out';
-              card.style.transform = `translateX(50%) rotate(${rotation}deg)`;
-              this.currentIndex -= 1;
-            }
+            this.stopDrag(e);
             break;
         }
       }
@@ -103,11 +82,14 @@
           return;
         }
 
-        const draggingIndex = toLeft ? this.curentIndex + 1 : this.currentIndex;
+        const draggingIndex = toLeft ? this.currentIndex + 1 : this.currentIndex;
 
-        this.draggingCard = this.shadowRoot.querySelector(`.deck hx-card:nth-child(${draggingIndex + 1})`);
+        if (toRight) {
+          this.cardWidth = this.getCard(draggingIndex).getBoundingClientRect().width;
+        }
+
+        this.draggingCard = this.getCard(draggingIndex);
         this.draggingDirection = toLeft ? "left" : "right";
-        this.cardWidth = this.draggingCard.getBoundingClientRect().width;
         this.draggingCard.style.transition = '';
       }
 
@@ -125,15 +107,18 @@
             this.draggingCard.style.transform = `translateX(50%) rotate(${rotation}deg)`;
           }
         } else {
-          const threshold = (this.cardWidth * (12 + (this.currentIndex + 1) * 2) / 90);
-          if (dx < -threshold) {
-            // const rotation = 12 + this.currentIndex * 2;
-            const pdx = -dx / threshold;
-            const rotation = (12 + (this.currentIndex + 1) * 2) * pdx * 90;
-            this.draggingCard.style.transform = `translateX(50%) rotate(${rotation}deg)`;
+          const startAngle = 12 + (this.currentIndex + 1) * 2;
+          const startX = this.cardWidth / 2 + (startAngle / 90) * (this.cardWidth / 2);
+          const x = startX + dx;
+          // console.log(x, dx);
+          if (x < this.cardWidth / 2) {
+            console.log(this.cardWidth, x);
+            this.draggingCard.style.transform = `translateX(${x}px)`;
           } else {
-            const pdx = (this.cardWidth / 2) - (threshold + dx);
-            this.draggingCard.style.transform = `translateX(${pdx}px)`;
+            const hdx = x - this.cardWidth / 2;
+            const pdx = hdx / this.cardWidth;
+            const rotation = pdx * 90;
+            this.draggingCard.style.transform = `translateX(50%) rotate(${rotation}deg)`;
           }
 
         }
