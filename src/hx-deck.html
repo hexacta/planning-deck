@@ -16,7 +16,6 @@
         width: 250px;
         border: solid 2px red;
         overflow: hidden;
-
         cursor: grab;
         cursor: -moz-grab;
         cursor: -webkit-grab;
@@ -27,7 +26,7 @@
         -ms-user-select: none;
         user-select: none;
       }
-
+      
       .deck:active {
         cursor: grabbing;
         cursor: -moz-grabbing;
@@ -73,8 +72,6 @@
       handleTrack(e) {
         const dx = e.detail.dx;
 
-        let card = this.currentCard;
-
         switch (e.detail.state) {
           case 'start':
             this.startDrag(e);
@@ -113,66 +110,63 @@
       drag(e) {
         if (!this.draggingCard) return;
 
-        const dx = e.detail.dx;
-        if (this.draggingDirection === "right") {
-          if (dx < this.cardWidth / 2) {
-            this.draggingCard.style.transform = `translateX(${dx}px)`;
-          } else {
-            const hdx = dx - this.cardWidth / 2;
-            const pdx = hdx / this.cardWidth;
-            const rotation = pdx * 90;
-            this.draggingCard.style.transform = `translateX(50%) rotate(${rotation}deg)`;
-          }
-        } else {
-          const startAngle = 12 + (this.currentIndex + 1) * 2;
-          const startX = this.cardWidth / 2 + (startAngle / 90) * (this.cardWidth / 2);
-          const x = startX + dx;
-          // console.log(x, dx);
-          if (x < this.cardWidth / 2) {
-            console.log(this.cardWidth, x);
-            this.draggingCard.style.transform = `translateX(${x}px)`;
-          } else {
-            const hdx = x - this.cardWidth / 2;
-            const pdx = hdx / this.cardWidth;
-            const rotation = pdx * 90;
-            this.draggingCard.style.transform = `translateX(50%) rotate(${rotation}deg)`;
-          }
-
-        }
+        const transform = this.getTransform(e.detail.dx, this.draggingDirection, this.currentIndex, this.cardWidth);
+        this.draggingCard.style.transform = transform;
       }
 
       stopDrag(e) {
         if (!this.draggingCard) return;
+        const halfWidth = this.cardWidth / 2;
+        const toRight = this.draggingDirection === "right";
+        const toLeft = !toRight;
+        const x = this.getX(e.detail.dx, this.draggingDirection, this.currentIndex, this.cardWidth);
+        const translate = x < halfWidth ? 0 : halfWidth;
+        const rotate = x < halfWidth ? 0 : this.getRestAngle(this.draggingDirection, this.currentIndex);
 
-        if (this.draggingDirection === "right") {
-          if (e.detail.dx < this.cardWidth / 2) {
-            this.draggingCard.style.transition = 'transform 0.5s ease-in-out';
-            this.draggingCard.style.transform = 'translateX(0px)';
-          } else {
-            const rotation = 12 + this.currentIndex * 2;
-            this.draggingCard.style.transition = 'transform 0.2s ease-in-out';
-            this.draggingCard.style.transform = `translateX(50%) rotate(${rotation}deg)`;
-            this.currentIndex -= 1;
-          }
-        } else {
-          if (e.detail.dx < -this.cardWidth / 2) {
-            const rotation = 12 + this.currentIndex * 2;
-            this.draggingCard.style.transition = 'transform 0.2s ease-in-out';
-            this.draggingCard.style.transform = `translateX(50%) rotate(${rotation}deg)`;
-          } else {
-            this.draggingCard.style.transition = 'transform 0.5s ease-in-out';
-            this.draggingCard.style.transform = 'translateX(0px)';
-            this.currentIndex += 1;
-          }
+        this.draggingCard.style.transform = this.toCSS(translate, rotate);
+        this.draggingCard.style.transition = 'transform 0.25s ease-in-out';
+
+        if (toRight && x >= halfWidth) {
+          this.currentIndex -= 1;
+        } else if (toLeft && x < halfWidth) {
+          this.currentIndex += 1;
         }
 
         this.draggingDirection = null;
         this.draggingCard = null;
       }
 
+      getTransform(dx, direction, currentIndex, cardWidth) {
+        const halfWidth = cardWidth / 2;
+        const x = this.getX(dx, direction, currentIndex, cardWidth);
+
+        const translate = Math.min(x, halfWidth);
+        const angle = 90 * (x - halfWidth) / halfWidth;
+        const rotate = Math.max(0, angle);
+
+        return this.toCSS(translate, rotate);
+      }
+
+      getX(dx, direction, currentIndex, cardWidth) {
+        const toRight = direction === "right";
+        const restAngle = this.getRestAngle(direction, currentIndex);
+        const halfWidth = cardWidth / 2;
+        const restX = halfWidth + (restAngle / 90) * halfWidth;
+        return toRight ? dx : restX + dx;
+      }
+
+      getRestAngle(direction, currentIndex) {
+        const toRight = direction === "right";
+        const draggingIndex = toRight ? currentIndex : currentIndex + 1;
+        return 12 + draggingIndex * 2;
+      }
+
+      toCSS(translate, rotate) {
+        return `translateX(${translate}px) rotate(${rotate}deg)`;
+      }
     }
 
-    window.requestAnimationFramePromise = _ => new Promise(requestAnimationFrame);
+    // window.requestAnimationFramePromise = () => new Promise(requestAnimationFrame);
     window.customElements.define(HxDeck.is, HxDeck);
   </script>
 </dom-module>
