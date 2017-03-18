@@ -9,7 +9,7 @@
         width: 200px;
         border: solid 1px black;
         background: #fafafa;
-        border-radius: 0.5em;
+        border-radius: 0.7em;
       }
 
       .container {
@@ -18,15 +18,24 @@
         padding: 0;
         display: flex;
         flex-direction: row; 
+        font-family: TimesNewRoman,"Times New Roman",Times,Baskerville,Georgia,serif;
       }
 
       .side {
         /*border: solid 1px red;*/
-        width: 10%;
+        flex: 1;
+        padding: 7% 4%;
+        font-size: 130%;     
+        font-weight: bold;
+      }
+
+      .right.side {
+        align-self: flex-end;
+        transform: rotate(180deg);
       }
 
       .center {
-        flex: 1;
+        flex: 8;
         align-self: center;   
         text-align: center;
         font-size: 500%;     
@@ -34,15 +43,18 @@
     </style>
 
     <div class="container">
-      <div class="side"><slot></slot></div>
-      <div class="center">34</div>
-      <div class="side"><slot></slot></div>      
+      <div class="side">[[value]]</div>
+      <div class="center">[[value]]</div>
+      <div class="right side">[[value]]</div>      
     </div>
   </template>
 
   <script>
     class HxCard extends Polymer.Element {
       static get is() { return 'hx-card'; }
+      static get properties() {
+        value: String
+      }
     }
 
     window.customElements.define(HxCard.is, HxCard);
