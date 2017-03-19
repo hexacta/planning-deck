@@ -18,6 +18,8 @@
         width: 100%;
         max-width: 400px;
         margin: auto;
+        background-color: #444;
+        /*rgb(10, 172, 142)*/
 
         overflow: hidden;
         cursor: grab;
@@ -40,9 +42,9 @@
       .card {
         position: absolute;
         transform-origin: bottom left;
-        width: 80%;
-        left: 10%;
-        bottom: 0;
+        width: 70%;
+        left: 15%;
+        bottom: -5px;
         /*transition: transform 0.1s ease-in-out;*/
       }
       
@@ -74,7 +76,7 @@
         return {
           cards: {
             type: Array,
-            value: () => [1, 2, 3, 5, 8, 13, 21]
+            value: () => [0, "½", 1, 2, 3, 5, 8, 13, 21]
           }
         }
       }
