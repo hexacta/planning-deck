@@ -18,7 +18,7 @@
         overflow-x: hidden;
         overflow-y: hidden;
         padding: 0;
-        font-family: TimesNewRoman, "Times New Roman", Times, Baskerville, Georgia, serif;
+        /*font-family: TimesNewRoman, "Times New Roman", Times, Baskerville, Georgia, serif;*/
         /*box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);*/
         /*display: flex;
         flex-direction: column;*/
@@ -41,6 +41,17 @@
         left: 18%;
         /* bring your own prefixes */
         transform: translate(-50%, -50%);
+      }
+      
+      .side .name {
+        position: absolute;
+        top: 50%;
+        right: 8%;
+        max-width: 50%;
+        /* bring your own prefixes */
+        transform: translate(0, -50%);
+        text-transform: uppercase;
+        font-size: 75%;
       }
       
       .side .logo {
@@ -69,7 +80,7 @@
       
       .center {
         height: 50%;
-        font-size: 500%;
+        font-size: 600%;
         font-weight: bolder;
         color: rgb(10, 172, 142);
         display: flex;
@@ -81,12 +92,14 @@
     <div class="container">
       <div class="side">
         <span class="value">[[value]]</span>
+        <span class="name">[[name]]</span>
         <div class="logo"></div>
         <hx-logo></hx-logo>
       </div>
       <div class="center"><span>[[value]]</span></div>
       <div class="right side">
         <span class="value">[[value]]</span>
+        <span class="name">[[name]]</span>
         <div class="logo"></div>
         <hx-logo></hx-logo>
       </div>

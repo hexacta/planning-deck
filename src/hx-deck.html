@@ -62,7 +62,7 @@
 
     <div class="deck" on-track="handleTrack">
       <template is="dom-repeat" items="[[cards]]">
-        <hx-card card-index="[[index]]" value="[[item]]" class="card"></hx-card>
+        <hx-card card-index="[[index]]" value="[[item.value]]" name="[[item.name]]" class="card"></hx-card>
       </template>
     </div>
   </template>
@@ -75,7 +75,17 @@
         return {
           cards: {
             type: Array,
-            value: () => [0, "½", 1, 2, 3, 5, 8, 13, 21]
+            value: () => [
+              { value: 0, name: "zero" },
+              { value: "½", name: "half" },
+              { value: 1, name: "one" },
+              { value: 2, name: "two" },
+              { value: 3, name: "three" },
+              { value: 5, name: "five" },
+              { value: 8, name: "eight" },
+              { value: 13, name: "thirteen" },
+              { value: 21, name: "twenty one" },
+            ]
           }
         }
       }
