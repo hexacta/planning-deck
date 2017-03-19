@@ -15,9 +15,10 @@
       .deck {
         position: relative;
         height: 100%;
-        width: 80%;
-        left: 10%;
-        border: solid 2px red;
+        width: 100%;
+        max-width: 400px;
+        margin: auto;
+
         overflow: hidden;
         cursor: grab;
         cursor: -moz-grab;
@@ -39,8 +40,8 @@
       .card {
         position: absolute;
         transform-origin: bottom left;
-        width: 100%;
-        max-width: 400px;
+        width: 80%;
+        left: 10%;
         /*transition: transform 0.1s ease-in-out;*/
       }
       
