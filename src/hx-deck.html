@@ -8,12 +8,15 @@
     <style include="shared-styles">
        :host {
         display: block;
-        padding: 10px;
+        height: 100%;
+        width: 100%;
       }
       
       .deck {
-        height: 350px;
-        width: 250px;
+        position: relative;
+        height: 100%;
+        width: 80%;
+        left: 10%;
         border: solid 2px red;
         overflow: hidden;
         cursor: grab;
@@ -33,16 +36,30 @@
         cursor: -webkit-grabbing;
       }
       
-      hx-card {
+      .card {
         position: absolute;
         transform-origin: bottom left;
+        width: 100%;
+        max-width: 400px;
         /*transition: transform 0.1s ease-in-out;*/
+      }
+      
+      .card:before {
+        content: "";
+        float: left;
+        padding-bottom: 140%;
+      }
+      
+      .card:after {
+        content: "";
+        display: table;
+        clear: both;
       }
     </style>
 
     <div class="deck" on-track="handleTrack">
       <template is="dom-repeat" items="[[cards]]">
-        <hx-card card-index="[[index]]" value="[[item]]"></hx-card>
+        <hx-card card-index="[[index]]" value="[[item]]" class="card"></hx-card>
       </template>
     </div>
   </template>
