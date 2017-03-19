@@ -160,7 +160,7 @@
         const x = this.getX(dx, direction, currentIndex, cardWidth);
 
         const translate = Math.min(x, halfWidth);
-        const angle = 90 * (x - halfWidth) / halfWidth;
+        const angle = 30 * (x - halfWidth) / halfWidth;
         const rotate = Math.max(0, angle);
 
         return this.toCSS(translate, rotate);
@@ -170,7 +170,7 @@
         const toRight = direction === "right";
         const restAngle = this.getRestAngle(direction, currentIndex);
         const halfWidth = cardWidth / 2;
-        const restX = halfWidth + (restAngle / 90) * halfWidth;
+        const restX = halfWidth + (restAngle / 30) * halfWidth;
         return toRight ? dx : restX + dx;
       }
 
