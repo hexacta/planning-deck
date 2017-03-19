@@ -1,50 +1,91 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="hx-logo.html">
 
 <dom-module id="hx-card">
   <template>
-    <style include="shared-styles">
-      :host {
+    <style>
+       :host {
         display: block;
       }
-
+      
       .container {
         position: absolute;
         height: 100%;
         width: 100%;
         border: solid 1px black;
         background: #fafafa;
-        border-radius: 0.7em;
+        border-radius: 16px;
+        overflow-x: hidden;
+        overflow-y: hidden;
         padding: 0;
-        display: flex;
-        flex-direction: row; 
-        font-family: TimesNewRoman,"Times New Roman",Times,Baskerville,Georgia,serif;
+        font-family: TimesNewRoman, "Times New Roman", Times, Baskerville, Georgia, serif;
+        /*box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);*/
+        /*display: flex;
+        flex-direction: column;*/
       }
-
+      
       .side {
         /*border: solid 1px red;*/
-        flex: 1;
-        padding: 7% 4%;
-        font-size: 130%;     
+        height: 25%;
+        position: relative;
+        /*padding: 7% 4%;*/
+        font-size: 150%;
         font-weight: bold;
+        background: rgb(10, 172, 142);
+        color: white;
       }
-
+      
+      .side .value {
+        position: absolute;
+        top: 50%;
+        left: 18%;
+        /* bring your own prefixes */
+        transform: translate(-50%, -50%);
+      }
+      
+      .side .logo {
+        position: absolute;
+        bottom: 0;
+        left: 18%;
+        /* bring your own prefixes */
+        transform: translate(-50%, 50%);
+        width: 18%;
+        padding-bottom: 18%;
+        background: #fafafa;
+        border-radius: 50%;
+      }
+      
+      hx-logo {
+        position: absolute;
+        width: 18%;
+        bottom: 0;
+        left: 18%;
+        transform: translate(-50%, 59%);
+      }
+      
       .right.side {
-        align-self: flex-end;
         transform: rotate(180deg);
       }
-
+      
       .center {
-        flex: 8;
-        align-self: center;   
-        text-align: center;
-        font-size: 500%;     
+        height: 50%;
+        font-size: 500%;
+        color: rgb(10, 172, 142);
       }
     </style>
 
     <div class="container">
-      <div class="side">[[value]]</div>
-      <div class="center">[[value]]</div>
-      <div class="right side">[[value]]</div>      
+      <div class="side">
+        <span class="value">[[value]]</span>
+        <div class="logo"></div>
+        <hx-logo></hx-logo>
+      </div>
+      <div class="center"><span>[[value]]</span></div>
+      <div class="right side">
+        <span class="value">[[value]]</span>
+        <div class="logo"></div>
+        <hx-logo></hx-logo>
+      </div>
     </div>
   </template>
 

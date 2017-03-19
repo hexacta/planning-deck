@@ -5,7 +5,7 @@
 
 <dom-module id="hx-deck">
   <template>
-    <style include="shared-styles">
+    <style>
        :host {
         display: block;
         height: 100%;
@@ -132,7 +132,10 @@
         if (!this.draggingCard) return;
 
         const transform = this.getTransform(e.detail.dx, this.draggingDirection, this.currentIndex, this.cardWidth);
-        this.draggingCard.style.transform = transform;
+
+        requestAnimationFramePromise().then(() => {
+          this.draggingCard.style.transform = transform;
+        });
       }
 
       stopDrag(e) {
@@ -187,7 +190,7 @@
       }
     }
 
-    // window.requestAnimationFramePromise = () => new Promise(requestAnimationFrame);
+    window.requestAnimationFramePromise = () => new Promise(requestAnimationFrame);
     window.customElements.define(HxDeck.is, HxDeck);
   </script>
 </dom-module>
