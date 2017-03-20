@@ -77,6 +77,7 @@
           cards: {
             type: Array,
             value: () => [
+              { value: "?", name: "unknown" },
               { value: 0, name: "zero" },
               { value: "½", name: "half" },
               { value: 1, name: "one" },
@@ -143,9 +144,10 @@
 
         const transform = this.getTransform(e.detail.dx, this.draggingDirection, this.currentIndex, this.cardWidth);
         const card = this.draggingCard;
-        requestAnimationFramePromise().then(() => {
-          card.style.transform = transform;
-        });
+        card.style.transform = transform;
+        // requestAnimationFramePromise().then(() => {
+        //   card.style.transform = transform;
+        // });
       }
 
       stopDrag(e) {
@@ -164,10 +166,12 @@
         }
 
         const card = this.draggingCard;
-        requestAnimationFramePromise().then(() => {
-          card.style.transform = this.toCSS(translate, rotate);
-          card.style.transition = 'transform 0.25s ease-in-out';
-        });
+        card.style.transform = this.toCSS(translate, rotate);
+        card.style.transition = 'transform 0.25s ease-in-out';
+        // requestAnimationFramePromise().then(() => {
+        //   card.style.transform = this.toCSS(translate, rotate);
+        //   card.style.transition = 'transform 0.25s ease-in-out';
+        // });
 
         this.draggingDirection = null;
         this.draggingCard = null;
