@@ -1,6 +1,6 @@
 {
-  "name": "polymer-starter-kit",
-  "license": "BSD-3-Clause",
+  "name": "planning-deck",
+  "license": "MIT",
   "devDependencies": {
     "browser-sync": "^2.18.8",
     "eslint": "^3.12.0",
@@ -13,6 +13,8 @@
     "start": "run-p start:polymer start:sync",
     "start:polymer": "polymer serve",
     "start:sync": "browser-sync start --proxy localhost:8081 --files=\"src/**/*\"",
-    "test": "npm run lint && polymer test"
+    "test": "npm run lint && polymer test",
+    "build": "polymer build --bundle --js-minify --css-minify --html-minify --add-service-worker",
+    "deploy": "firebase deploy"
   }
 }
