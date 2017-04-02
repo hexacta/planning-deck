@@ -61,7 +61,11 @@
 			const height = width * 1.4; // depends on aspect ratio
 			const cy = height * 1.25; // depends on transform-origin
 
-			const { a } = getPolar(e, prevState);
+			let { a } = getPolar(e, prevState);
+			const threshold = 7 * Math.PI / 16;
+			const restAngle = 3 * Math.PI / 8;
+			a = a < threshold ? restAngle : Math.PI / 2;
+
 			const transform = getTransform(prevState, { a, r: cy });
 			const {x, y} = getCartesianFromPolar({ a, r: cy });
 
