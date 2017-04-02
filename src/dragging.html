@@ -63,8 +63,9 @@
 
 			let { a } = getPolar(e, prevState);
 			const threshold = 7 * Math.PI / 16;
-			const restAngle = 3 * Math.PI / 8;
+			const restAngle = 3 * Math.PI / 8 - (0.01 * prevState.index);
 			a = a < threshold ? restAngle : Math.PI / 2;
+			const rest = a < threshold ? "right" : "left";
 
 			const transform = getTransform(prevState, { a, r: cy });
 			const {x, y} = getCartesianFromPolar({ a, r: cy });
@@ -73,7 +74,8 @@
 				xStart: x,
 				yStart: y,
 				transition: "transform 0.25s ease-in-out",
-				transform: transform
+				transform: transform,
+				rest: rest
 			};
 		}
 

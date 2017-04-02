@@ -104,11 +104,31 @@
       }
 
       handleTrack(e) {
-        const card = this.getCard(this.currentIndex);
-        const state = Hx.move(e, card.state || {
+        if (e.detail.state === "start") {
+
+          const targetIndex = e.target.cardIndex;
+
+          const toLeft = targetIndex && targetIndex > this.currentIndex;
+          const toRight = !toLeft;
+          const emptyDeck = this.currentIndex < 0;
+
+          if (toRight && emptyDeck) {
+            return;
+          }
+
+          const draggingIndex = toLeft ? this.currentIndex + 1 : this.currentIndex;
+
+          this.draggingCard = this.getCard(draggingIndex);
+        }
+
+        if (!this.draggingCard) return;
+
+        const card = this.draggingCard;
+        const newState = Hx.move(e, card.state || {
+          rest: "left",
+          index: card.cardIndex,
           cardWidth: card.getBoundingClientRect().width
         });
-        card.state = state;
 
         switch (e.detail.state) {
           case 'start':
@@ -119,8 +139,16 @@
             break;
           case 'end':
             this.dragging = false;
+            this.draggingCard = null;
+            if (card.state.rest == "left" && newState.rest == "right") {
+              this.currentIndex--;
+            }
+            if (card.state.rest == "right" && newState.rest == "left") {
+              this.currentIndex++;
+            }
             break;
         }
+        card.state = newState;
       }
 
       update(card) {
@@ -133,97 +161,8 @@
         }
       }
 
-      startDrag(e) {
-        const targetIndex = e.target.cardIndex;
-
-        const toLeft = targetIndex && targetIndex > this.currentIndex;
-        const toRight = !toLeft;
-        const emptyDeck = this.currentIndex < 0;
-
-        if (toRight && emptyDeck) {
-          return;
-        }
-
-        const draggingIndex = toLeft ? this.currentIndex + 1 : this.currentIndex;
-
-        if (toRight) {
-          this.cardWidth = this.getCard(draggingIndex).getBoundingClientRect().width;
-        }
-
-        this.draggingCard = this.getCard(draggingIndex);
-        this.draggingDirection = toLeft ? "left" : "right";
-        this.draggingCard.style.transition = '';
-      }
-
-      drag(e) {
-        if (!this.draggingCard) return;
-
-        const transform = this.getTransform(e.detail.dx, this.draggingDirection, this.currentIndex, this.cardWidth);
-        const card = this.draggingCard;
-        card.style.transform = transform;
-        // requestAnimationFramePromise().then(() => {
-        //   card.style.transform = transform;
-        // });
-      }
-
-      stopDrag(e) {
-        if (!this.draggingCard) return;
-        const halfWidth = this.cardWidth / 2;
-        const toRight = this.draggingDirection === "right";
-        const toLeft = !toRight;
-        const x = this.getX(e.detail.dx, this.draggingDirection, this.currentIndex, this.cardWidth);
-        const translate = x < halfWidth ? 0 : halfWidth;
-        const rotate = x < halfWidth ? 0 : this.getRestAngle(this.draggingDirection, this.currentIndex);
-
-        if (toRight && x >= halfWidth) {
-          this.currentIndex -= 1;
-        } else if (toLeft && x < halfWidth) {
-          this.currentIndex += 1;
-        }
-
-        const card = this.draggingCard;
-        card.style.transform = this.toCSS(translate, rotate);
-        card.style.transition = 'transform 0.25s ease-in-out';
-        // requestAnimationFramePromise().then(() => {
-        //   card.style.transform = this.toCSS(translate, rotate);
-        //   card.style.transition = 'transform 0.25s ease-in-out';
-        // });
-
-        this.draggingDirection = null;
-        this.draggingCard = null;
-      }
-
-      getTransform(dx, direction, currentIndex, cardWidth) {
-        const halfWidth = cardWidth / 2;
-        const x = this.getX(dx, direction, currentIndex, cardWidth);
-
-        const translate = Math.min(x, halfWidth);
-        const angle = 30 * (x - halfWidth) / halfWidth;
-        const rotate = Math.max(0, angle);
-
-        return this.toCSS(translate, rotate);
-      }
-
-      getX(dx, direction, currentIndex, cardWidth) {
-        const toRight = direction === "right";
-        const restAngle = this.getRestAngle(direction, currentIndex);
-        const halfWidth = cardWidth / 2;
-        const restX = halfWidth + (restAngle / 30) * halfWidth;
-        return toRight ? dx : restX + dx;
-      }
-
-      getRestAngle(direction, currentIndex) {
-        const toRight = direction === "right";
-        const draggingIndex = toRight ? currentIndex : currentIndex + 1;
-        return 12 + draggingIndex * 2;
-      }
-
-      toCSS(translate, rotate) {
-        return `translateX(${translate}px) rotate(${rotate}deg)`;
-      }
     }
 
-    window.requestAnimationFramePromise = () => new Promise(requestAnimationFrame);
     window.customElements.define(HxDeck.is, HxDeck);
   </script>
 </dom-module>
