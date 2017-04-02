@@ -2,11 +2,6 @@
 	(function () {
 		'use strict';
 
-		function startDrag(e, prevState) {
-			return {
-			};
-		}
-
 		function getCartesian(e, prevState) {
 			const bx = prevState.dxStart || 0;
 			const by = prevState.dyStart || 0;
@@ -34,26 +29,42 @@
 
 			return {
 				radius: y,
-				angle: radians
+				angle: radians,
 			};
 		}
 
-		function drag(e, prevState) {
-			const {radius, angle} = getPolar(e, prevState);
+		function getTransform(polar) {
+			const {radius, angle} = polar;
 
 			const translate = `translateY(${-radius}px)`;
 			const rotate = `rotate(${angle}rad)`;
 
+			return `${rotate} ${translate}`;
+		}
+
+		function startDrag(e, prevState) {
 			return {
-				transform: `${rotate} ${translate}`
+			};
+		}
+
+		function drag(e, prevState) {
+			const polars = getPolar(e, prevState);
+			return {
+				transform: getTransform(polars),
+				transition: "",
 			};
 		}
 
 		function stopDrag(e, prevState) {
 			const {dx, dy} = getCartesian(e, prevState);
+			const { angle } = getPolar(e, prevState);
+			const transform = getTransform({ angle, radius: 0 });
+
 			return {
 				dxStart: dx,
-				dyStart: -dy
+				dyStart: -dy,
+				transition: "transform 0.25s ease-in-out",
+				transform: transform
 			};
 		}
 
