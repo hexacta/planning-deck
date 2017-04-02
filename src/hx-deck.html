@@ -2,6 +2,7 @@
 <link rel="import" href="../bower_components/polymer/lib/mixins/gesture-event-listeners.html">
 <link rel="import" href="../bower_components/polymer/lib/elements/dom-repeat.html">
 <link rel="import" href="hx-card.html">
+<link rel="import" href="dragging.html">
 
 <dom-module id="hx-deck">
   <template>
@@ -40,7 +41,7 @@
       
       .card {
         position: absolute;
-        transform-origin: bottom left;
+        transform-origin: 25% 175%; /* See https://codepen.io/pomber/pen/mWvXqz */
         width: 70%;
         left: 15%;
         bottom: -5px;
@@ -102,19 +103,24 @@
       }
 
       handleTrack(e) {
-        const dx = e.detail.dx;
+        const card = this.getCard(this.currentIndex);
+        const state = Hx.move(e, {
+          cardWidth: card.getBoundingClientRect().width
+        });
+        card.style.transform = state.transform;
 
-        switch (e.detail.state) {
-          case 'start':
-            this.startDrag(e);
-            break;
-          case 'track':
-            this.drag(e);
-            break;
-          case 'end':
-            this.stopDrag(e);
-            break;
-        }
+
+        // switch (e.detail.state) {
+        //   case 'start':
+        //     this.startDrag(e);
+        //     break;
+        //   case 'track':
+        //     this.drag(e);
+        //     break;
+        //   case 'end':
+        //     this.stopDrag(e);
+        //     break;
+        // }
       }
 
       startDrag(e) {

@@ -1,0 +1,56 @@
+<script>
+	(function () {
+		'use strict';
+
+		function startDrag(e, prevState) {
+			return {
+				transform: ``
+			};
+		}
+
+		function drag(e, prevState) {
+			const width = prevState.cardWidth;
+			const height = width * 1.4; // depends on aspect ratio
+
+			const dx = e.detail.dx;
+			const dy = -e.detail.dy;
+
+			const cx = width * 0.25; // depends on transform-origin
+			const cy = height * 1.25; // depends on transform-origin
+
+			const p = cy * dx / (cy + dy);
+			const radians = Math.atan2(p, cy);
+
+			const s = Math.tan(radians) * cx;
+			const t = Math.cos(radians) * (dy + cy);
+			const y = s + t - cy;
+
+			const translate = `translateY(${-y}px)`;
+			const rotate = `rotate(${radians}rad)`;
+
+			return {
+				transform: `${rotate} ${translate}`
+			};
+		}
+
+		function stopDrag(e, prevState) {
+			return {
+				transform: `rotate(27deg)`
+			};
+		}
+
+		window.Hx = window.Hx || {};
+		window.Hx.move = function (event, prevState) {
+			switch (event.detail.state) {
+				case 'start':
+					return startDrag(event, prevState);
+				case 'track':
+					return drag(event, prevState);
+				case 'end':
+					return stopDrag(event, prevState);
+			}
+		}
+
+	})();
+
+</script>
