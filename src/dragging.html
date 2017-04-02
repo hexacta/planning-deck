@@ -4,16 +4,23 @@
 
 		function startDrag(e, prevState) {
 			return {
-				transform: ``
 			};
+		}
+
+		function getCartesian(e, prevState) {
+			const bx = prevState.dxStart || 0;
+			const by = prevState.dyStart || 0;
+			return {
+				dx: e.detail.dx + bx,
+				dy: -(e.detail.dy + by)
+			}
 		}
 
 		function drag(e, prevState) {
 			const width = prevState.cardWidth;
 			const height = width * 1.4; // depends on aspect ratio
 
-			const dx = e.detail.dx;
-			const dy = -e.detail.dy;
+			const {dx, dy} = getCartesian(e, prevState);
 
 			const cx = width * 0.25; // depends on transform-origin
 			const cy = height * 1.25; // depends on transform-origin
@@ -34,21 +41,28 @@
 		}
 
 		function stopDrag(e, prevState) {
+			const {dx, dy} = getCartesian(e, prevState);
 			return {
-				transform: `rotate(27deg)`
+				dxStart: dx,
+				dyStart: -dy
 			};
 		}
 
 		window.Hx = window.Hx || {};
 		window.Hx.move = function (event, prevState) {
+			let state = {};
 			switch (event.detail.state) {
 				case 'start':
-					return startDrag(event, prevState);
+					state = startDrag(event, prevState);
+					break;
 				case 'track':
-					return drag(event, prevState);
+					state = drag(event, prevState);
+					break;
 				case 'end':
-					return stopDrag(event, prevState);
+					state = stopDrag(event, prevState);
+					break;
 			}
+			return Object.assign({}, prevState, state);
 		}
 
 	})();

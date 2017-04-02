@@ -104,10 +104,11 @@
 
       handleTrack(e) {
         const card = this.getCard(this.currentIndex);
-        const state = Hx.move(e, {
+        const state = Hx.move(e, card.state || {
           cardWidth: card.getBoundingClientRect().width
         });
         card.style.transform = state.transform;
+        card.state = state;
 
 
         // switch (e.detail.state) {
