@@ -16,7 +16,7 @@
 			}
 		}
 
-		function drag(e, prevState) {
+		function getPolar(e, prevState) {
 			const width = prevState.cardWidth;
 			const height = width * 1.4; // depends on aspect ratio
 
@@ -32,8 +32,17 @@
 			const t = Math.cos(radians) * (dy + cy);
 			const y = s + t - cy;
 
-			const translate = `translateY(${-y}px)`;
-			const rotate = `rotate(${radians}rad)`;
+			return {
+				radius: y,
+				angle: radians
+			};
+		}
+
+		function drag(e, prevState) {
+			const {radius, angle} = getPolar(e, prevState);
+
+			const translate = `translateY(${-radius}px)`;
+			const rotate = `rotate(${angle}rad)`;
 
 			return {
 				transform: `${rotate} ${translate}`
