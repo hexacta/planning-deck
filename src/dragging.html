@@ -3,66 +3,71 @@
 		'use strict';
 
 		function getCartesian(e, prevState) {
-			const bx = prevState.dxStart || 0;
-			const by = prevState.dyStart || 0;
+			const width = prevState.cardWidth;
+			const height = width * 1.4; // depends on aspect ratio
+			const cy = height * 1.25; // depends on transform-origin
+
+			const bx = prevState.xStart || 0;
+			const by = prevState.yStart || cy;
+
 			return {
-				dx: e.detail.dx + bx,
-				dy: -(e.detail.dy + by)
+				x: bx + e.detail.dx,
+				y: by - e.detail.dy
+			}
+		}
+
+		function getCartesianFromPolar(polar) {
+			return {
+				x: polar.r * Math.cos(polar.a),
+				y: polar.r * Math.sin(polar.a)
 			}
 		}
 
 		function getPolar(e, prevState) {
-			const width = prevState.cardWidth;
-			const height = width * 1.4; // depends on aspect ratio
-
-			const {dx, dy} = getCartesian(e, prevState);
-
-			const cx = width * 0.25; // depends on transform-origin
-			const cy = height * 1.25; // depends on transform-origin
-
-			const p = cy * dx / (cy + dy);
-			const radians = Math.atan2(p, cy);
-
-			const s = Math.tan(radians) * cx;
-			const t = Math.cos(radians) * (dy + cy);
-			const y = s + t - cy;
-
+			const {x, y} = getCartesian(e, prevState);
 			return {
-				radius: y,
-				angle: radians,
+				r: Math.sqrt(x * x + y * y),
+				a: Math.atan2(y, x)
 			};
 		}
 
-		function getTransform(polar) {
-			const {radius, angle} = polar;
+		function getTransform(prevState, polar) {
+			const width = prevState.cardWidth;
+			const height = width * 1.4; // depends on aspect ratio
+			const cy = height * 1.25; // depends on transform-origin
+			const {r, a} = polar;
 
-			const translate = `translateY(${-radius}px)`;
-			const rotate = `rotate(${angle}rad)`;
-
+			const translate = `translateY(${cy - r}px)`;
+			const rotate = `rotate(${(Math.PI / 2) - a}rad)`;
 			return `${rotate} ${translate}`;
 		}
 
 		function startDrag(e, prevState) {
 			return {
+				transition: ""
 			};
 		}
 
 		function drag(e, prevState) {
-			const polars = getPolar(e, prevState);
+			const polar = getPolar(e, prevState);
 			return {
-				transform: getTransform(polars),
+				transform: getTransform(prevState, polar),
 				transition: "",
 			};
 		}
 
 		function stopDrag(e, prevState) {
-			const {dx, dy} = getCartesian(e, prevState);
-			const { angle } = getPolar(e, prevState);
-			const transform = getTransform({ angle, radius: 0 });
+			const width = prevState.cardWidth;
+			const height = width * 1.4; // depends on aspect ratio
+			const cy = height * 1.25; // depends on transform-origin
+
+			const { a } = getPolar(e, prevState);
+			const transform = getTransform(prevState, { a, r: cy });
+			const {x, y} = getCartesianFromPolar({ a, r: cy });
 
 			return {
-				dxStart: dx,
-				dyStart: -dy,
+				xStart: x,
+				yStart: y,
 				transition: "transform 0.25s ease-in-out",
 				transform: transform
 			};
