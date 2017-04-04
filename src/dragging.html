@@ -60,7 +60,7 @@
 					yStart: cy,
 				};
 				
-			} else if (prevState.rest != "up" && prevState.cardHeight * 0.4 < r - cy) {
+			} else if (prevState.rest != "up" && prevState.cardHeight * 0.35 < r - cy) {
 				const nr = cy + prevState.cardHeight * 1.10;
 				rest = "up";
 				restPolar = { a: Math.PI / 2, r: nr, cy: cy };
@@ -91,7 +91,7 @@
 			return {
 				xStart: x,
 				yStart: y,
-				transition: "transform 0.25s ease-in-out",
+				transition: "transform 0.25s ease-out",
 				transform: transform,
 				rest: rest,
 				endState: endState
