@@ -1,10 +1,10 @@
 {
   "name": "Planning Deck",
-  "short_name": "Planning Deck",
+  "short_name": "Planning",
   "start_url": "/?homescreen=1",
   "display": "standalone",
-  "theme_color": "#444",
-  "background_color": "#444",
+  "theme_color": "#0AAC8E",
+  "background_color": "#0AAC8E",
   "icons": [
     {
       "src": "images/manifest/icon-192x192.png",
