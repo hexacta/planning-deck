@@ -6,10 +6,10 @@
 
 		function getPolar(e, prevState) {
 			return Hx.coords.getPolar(
-				prevState.cardHeight, 
-				prevState.xStart, 
-				prevState.yStart, 
-				e.detail.dx, 
+				prevState.cardHeight,
+				prevState.xStart,
+				prevState.yStart,
+				e.detail.dx,
 				e.detail.dy);
 		}
 
@@ -26,30 +26,75 @@
 			};
 		}
 
-		function drag(e, prevState) {
+		function polarDrag(e, prevState) {
 			const polar = getPolar(e, prevState);
 			return {
-				transform: getTransform(polar),
-				transition: "",
+				transform: getTransform(polar)
+			};
+		}
+
+		function cartesianDrag(e, prevState) {
+			return {
+				transform: `scale(1.4) translate(${e.detail.dx}px, ${e.detail.dy}px)`
 			};
 		}
 
 		function stopDrag(e, prevState) {
-			let {a, cy} = getPolar(e, prevState);
-			const threshold = 7 * Math.PI / 16;
-			const restAngle = 3 * Math.PI / 8 - (0.01 * prevState.index);
-			a = a < threshold ? restAngle : Math.PI / 2;
-			const rest = a < threshold ? "right" : "left";
+			let {a, r, cy} = getPolar(e, prevState);
 
-			const transform = getTransform({ a, r: cy, cy: cy });
-			const {x, y} = Hx.coords.toCartesian({ a, r: cy, cy: cy });
+			let rest = prevState.rest;
+			let restPolar = {};
+			let endState = false;
+
+			if (prevState.rest == "up") {
+				const nr = cy + prevState.cardHeight * 1.10;
+				rest = "middle";
+				restPolar = { a: Math.PI / 2, r: nr, cy: cy };
+				endState = {
+					transform: "",
+					transition: "transform 0.25s ease-in-out",
+					transformOrigin: "25% 175%",
+					zIndex: 0,
+					endState: false,
+					xStart: 0,
+					yStart: cy,
+				};
+				
+			} else if (prevState.rest != "up" && prevState.cardHeight * 0.4 < r - cy) {
+				const nr = cy + prevState.cardHeight * 1.10;
+				rest = "up";
+				restPolar = { a: Math.PI / 2, r: nr, cy: cy };
+				endState = {
+					transform: "scale(1.4)",
+					transition: "transform 0.25s ease-in-out",
+					transformOrigin: "bottom",
+					zIndex: 10,
+					endState: false
+				};
+			} else if (prevState.rest == "middle") {
+				const threshold = 15 * Math.PI / 32;
+				const restAngle = 3 * Math.PI / 8 - (0.01 * prevState.index);
+				a = a < threshold ? restAngle : Math.PI / 2;
+				rest = a < threshold ? "right" : "middle";
+				restPolar = { a, r: cy, cy: cy };
+			} else if (prevState.rest == "right") {
+				const threshold = 12 * Math.PI / 32;
+				const restAngle = 3 * Math.PI / 8 - (0.01 * prevState.index);
+				a = a < threshold ? restAngle : Math.PI / 2;
+				rest = a < threshold ? "right" : "middle";
+				restPolar = { a, r: cy, cy: cy };
+			}
+
+			const transform = getTransform(restPolar);
+			const {x, y} = Hx.coords.toCartesian(restPolar);
 
 			return {
 				xStart: x,
 				yStart: y,
 				transition: "transform 0.25s ease-in-out",
 				transform: transform,
-				rest: rest
+				rest: rest,
+				endState: endState
 			};
 		}
 
@@ -61,7 +106,7 @@
 					state = startDrag(event, prevState);
 					break;
 				case 'track':
-					state = drag(event, prevState);
+					state = prevState.rest == "up" ? cartesianDrag(event, prevState) : polarDrag(event, prevState);
 					break;
 				case 'end':
 					state = stopDrag(event, prevState);

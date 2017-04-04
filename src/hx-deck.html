@@ -105,7 +105,6 @@
 
       handleTrack(e) {
         if (e.detail.state === "start") {
-
           const targetIndex = e.target.cardIndex;
 
           const toLeft = targetIndex && targetIndex > this.currentIndex;
@@ -125,33 +124,43 @@
 
         const card = this.draggingCard;
         const newState = Hx.move(e, card.state || {
-          rest: "left",
+          rest: "middle",
           index: card.cardIndex,
           cardHeight: card.getBoundingClientRect().height
         });
 
-        switch (e.detail.state) {
-          case 'start':
-            requestAnimationFrame(() => {
-              this.update(card);
-            });
-            break;
-          case 'end':
-            this.draggingCard = null;
-            if (card.state.rest == "left" && newState.rest == "right") {
-              this.currentIndex--;
-            }
-            if (card.state.rest == "right" && newState.rest == "left") {
-              this.currentIndex++;
-            }
-            break;
+        if (e.detail.state == "start") {
+          requestAnimationFrame(() => {
+            this.update(card);
+          });
         }
+
+        if (e.detail.state == "end") {
+          this.draggingCard = null;
+          if (card.state.rest != "right" && newState.rest == "right") {
+            this.currentIndex--;
+          }
+          if (card.state.rest == "right" && newState.rest != "right") {
+            this.currentIndex++;
+          }
+        }
+
         card.state = newState;
       }
 
       update(card) {
         card.style.transform = card.state.transform;
         card.style.transition = card.state.transition;
+        card.style.transformOrigin = card.state.transformOrigin || "";
+        card.style.zIndex = card.state.zIndex || "";;
+
+        if (card.state.endState) {
+          card.addEventListener("transitionend", () => {
+            card.state = Object.assign({}, card.state, card.state.endState);
+            this.update(card);
+          }, { once: true });
+        }
+
         if (this.draggingCard) {
           requestAnimationFrame(() => {
             this.update(card);
