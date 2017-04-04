@@ -1,0 +1,51 @@
+<script>
+	(function () {
+		'use strict';
+
+		const HEIGHTS_FROM_ORIGIN_TO_CENTER = 1.25;
+
+		function getCartesian(cardHeight, prevx, prevy, dx, dy) {
+			const cy = cardHeight * HEIGHTS_FROM_ORIGIN_TO_CENTER;
+			const bx = prevx || 0;
+			const by = prevy || cy;
+			return {
+				x: bx + dx, // current horizontal distance from original card center
+				y: by - dy, // current vertical distance from transform-origin
+				cy: cy // vertical distance from transform-origin to original card center
+			}
+		}
+
+		function getPolar(cardHeight, prevx, prevy, dx, dy) {
+			const cartesian = getCartesian(cardHeight, prevx, prevy, dx, dy);
+			return toPolar(cartesian);
+		}
+
+		function toPolar(cartesian) {
+			const {x, y, cy} = cartesian;
+			return {
+				r: Math.sqrt(x * x + y * y), // radial distance from transform-origin
+				a: Math.atan2(y, x), // current angle from horizontal angle
+				// ca: (Math.PI / 2) - a, // complementary angle: current angle from vertical angle (inverted)
+				cy: cy // vertical distance from transform-origin to original card center
+			};
+		}
+
+		function toCartesian(polar) {
+			return {
+				x: polar.r * Math.cos(polar.a),
+				y: polar.r * Math.sin(polar.a),
+				cy: polar.cy
+			}
+		}
+
+		window.Hx = window.Hx || {};
+		window.Hx.coords = {
+			getCartesian,
+			getPolar,
+			toPolar,
+			toCartesian
+		};
+
+	})();
+
+</script>

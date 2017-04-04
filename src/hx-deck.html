@@ -127,18 +127,16 @@
         const newState = Hx.move(e, card.state || {
           rest: "left",
           index: card.cardIndex,
-          cardWidth: card.getBoundingClientRect().width
+          cardHeight: card.getBoundingClientRect().height
         });
 
         switch (e.detail.state) {
           case 'start':
-            this.dragging = true;
             requestAnimationFrame(() => {
               this.update(card);
             });
             break;
           case 'end':
-            this.dragging = false;
             this.draggingCard = null;
             if (card.state.rest == "left" && newState.rest == "right") {
               this.currentIndex--;
@@ -154,7 +152,7 @@
       update(card) {
         card.style.transform = card.state.transform;
         card.style.transition = card.state.transition;
-        if (this.dragging) {
+        if (this.draggingCard) {
           requestAnimationFrame(() => {
             this.update(card);
           });

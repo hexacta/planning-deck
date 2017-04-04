@@ -1,42 +1,20 @@
+<link rel="import" href="coords.html">
+
 <script>
 	(function () {
 		'use strict';
 
-		function getCartesian(e, prevState) {
-			const width = prevState.cardWidth;
-			const height = width * 1.4; // depends on aspect ratio
-			const cy = height * 1.25; // depends on transform-origin
-
-			const bx = prevState.xStart || 0;
-			const by = prevState.yStart || cy;
-
-			return {
-				x: bx + e.detail.dx,
-				y: by - e.detail.dy
-			}
-		}
-
-		function getCartesianFromPolar(polar) {
-			return {
-				x: polar.r * Math.cos(polar.a),
-				y: polar.r * Math.sin(polar.a)
-			}
-		}
-
 		function getPolar(e, prevState) {
-			const {x, y} = getCartesian(e, prevState);
-			return {
-				r: Math.sqrt(x * x + y * y),
-				a: Math.atan2(y, x)
-			};
+			return Hx.coords.getPolar(
+				prevState.cardHeight, 
+				prevState.xStart, 
+				prevState.yStart, 
+				e.detail.dx, 
+				e.detail.dy);
 		}
 
-		function getTransform(prevState, polar) {
-			const width = prevState.cardWidth;
-			const height = width * 1.4; // depends on aspect ratio
-			const cy = height * 1.25; // depends on transform-origin
-			const {r, a} = polar;
-
+		function getTransform(polar) {
+			const {r, a, cy} = polar;
 			const translate = `translateY(${cy - r}px)`;
 			const rotate = `rotate(${(Math.PI / 2) - a}rad)`;
 			return `${rotate} ${translate}`;
@@ -51,24 +29,20 @@
 		function drag(e, prevState) {
 			const polar = getPolar(e, prevState);
 			return {
-				transform: getTransform(prevState, polar),
+				transform: getTransform(polar),
 				transition: "",
 			};
 		}
 
 		function stopDrag(e, prevState) {
-			const width = prevState.cardWidth;
-			const height = width * 1.4; // depends on aspect ratio
-			const cy = height * 1.25; // depends on transform-origin
-
-			let { a } = getPolar(e, prevState);
+			let {a, cy} = getPolar(e, prevState);
 			const threshold = 7 * Math.PI / 16;
 			const restAngle = 3 * Math.PI / 8 - (0.01 * prevState.index);
 			a = a < threshold ? restAngle : Math.PI / 2;
 			const rest = a < threshold ? "right" : "left";
 
-			const transform = getTransform(prevState, { a, r: cy });
-			const {x, y} = getCartesianFromPolar({ a, r: cy });
+			const transform = getTransform({ a, r: cy, cy: cy });
+			const {x, y} = Hx.coords.toCartesian({ a, r: cy, cy: cy });
 
 			return {
 				xStart: x,

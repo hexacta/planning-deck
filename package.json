@@ -2,6 +2,7 @@
   "name": "planning-deck",
   "license": "MIT",
   "devDependencies": {
+    "bower": "^1.8.0",
     "browser-sync": "^2.18.8",
     "eslint": "^3.12.0",
     "eslint-config-google": "^0.7.1",
@@ -9,6 +10,7 @@
     "npm-run-all": "^4.0.2"
   },
   "scripts": {
+    "postinstall": "bower i",
     "lint": "eslint . --ext js,html --ignore-path .gitignore",
     "start": "run-p start:polymer start:sync",
     "start:polymer": "polymer serve",
