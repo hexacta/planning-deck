@@ -41,6 +41,7 @@
       
       .card {
         position: absolute;
+        z-index: 1;
         transform-origin: 25% 175%;
         /* See https://codepen.io/pomber/pen/mWvXqz */
         width: 70%;
@@ -145,17 +146,25 @@
           }
         }
 
-        card.state = newState;
+        console.log(newState);
+        card.state = Object.assign({}, card.state, newState);
       }
 
       update(card) {
         card.style.transform = card.state.transform;
         card.style.transition = card.state.transition;
-        card.style.transformOrigin = card.state.transformOrigin || "";
-        card.style.zIndex = card.state.zIndex || "";;
+
+        if (card.state.transformOrigin) {
+          card.style.transformOrigin = card.state.transformOrigin;
+        }
+        if (card.state.zIndex) {
+          card.style.zIndex = card.state.zIndex;
+        }
+
 
         if (card.state.endState) {
           card.addEventListener("transitionend", () => {
+            console.log(card.state.endState);
             card.state = Object.assign({}, card.state, card.state.endState);
             this.update(card);
           }, { once: true });

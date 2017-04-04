@@ -39,63 +39,93 @@
 			};
 		}
 
-		function stopDrag(e, prevState) {
-			let {a, r, cy} = getPolar(e, prevState);
+		function getUpState() {
+			return {
+				transform: "scale(1.4)",
+				transition: "transform 0.25s ease-in-out",
+				transformOrigin: "bottom",
+				zIndex: 10,
+				rest: "up",
+				endState: false
+			};
+		}
 
-			let rest = prevState.rest;
-			let restPolar = {};
-			let endState = false;
+		function getMiddleUpState(cardHeight, cy) {
+			const dy = cardHeight * 1.10;
+			return {
+				transition: "transform 0.25s ease-out",
+				transform: `translateY(${-dy}px)`,
+				rest: "middleup",
+				endState: getUpState()
+			};
+		}
 
-			if (prevState.rest == "up") {
-				const nr = cy + prevState.cardHeight * 1.10;
-				rest = "middle";
-				restPolar = { a: Math.PI / 2, r: nr, cy: cy };
-				endState = {
-					transform: "",
-					transition: "transform 0.25s ease-in-out",
-					transformOrigin: "25% 175%",
-					zIndex: 0,
-					endState: false,
-					xStart: 0,
-					yStart: cy,
-				};
-				
-			} else if (prevState.rest != "up" && prevState.cardHeight * 0.35 < r - cy) {
-				const nr = cy + prevState.cardHeight * 1.10;
-				rest = "up";
-				restPolar = { a: Math.PI / 2, r: nr, cy: cy };
-				endState = {
-					transform: "scale(1.4)",
-					transition: "transform 0.25s ease-in-out",
-					transformOrigin: "bottom",
-					zIndex: 10,
-					endState: false
-				};
-			} else if (prevState.rest == "middle") {
-				const threshold = 15 * Math.PI / 32;
-				const restAngle = 3 * Math.PI / 8 - (0.01 * prevState.index);
-				a = a < threshold ? restAngle : Math.PI / 2;
-				rest = a < threshold ? "right" : "middle";
-				restPolar = { a, r: cy, cy: cy };
-			} else if (prevState.rest == "right") {
-				const threshold = 12 * Math.PI / 32;
-				const restAngle = 3 * Math.PI / 8 - (0.01 * prevState.index);
-				a = a < threshold ? restAngle : Math.PI / 2;
-				rest = a < threshold ? "right" : "middle";
-				restPolar = { a, r: cy, cy: cy };
-			}
+		function getUpMiddleState(cardHeight, cy) {
+			const dy = cardHeight * 1.10;
+			return {
+				transition: "transform 0.25s ease-out",
+				transform: `translateY(${-dy}px)`,
+				rest: "upmiddle",
+				endState: getMiddleState()
+			};
+		}
 
-			const transform = getTransform(restPolar);
-			const {x, y} = Hx.coords.toCartesian(restPolar);
+		function getMiddleState(cy) {
+			return {
+				xStart: 0,
+				yStart: cy,
+				transition: "transform 0.25s ease-in-out",
+				transformOrigin: "25% 175%",
+				transform: "",
+				rest: "middle",
+				endState: false,
+				zIndex: 1,
+			};
+		}
 
+		function getRightState(index, cy) {
+			const a = 3 * Math.PI / 8 - (0.01 * index);
+			const polar = { a, r: cy, cy };
+			const transform = getTransform(polar);
+			const {x, y} = Hx.coords.toCartesian(polar);
 			return {
 				xStart: x,
 				yStart: y,
 				transition: "transform 0.25s ease-out",
 				transform: transform,
-				rest: rest,
-				endState: endState
+				rest: "right"
 			};
+		}
+
+		function nextPlace(e, prevState) {
+			let {a, r, cy} = getPolar(e, prevState);
+			if (prevState.rest == "up") {
+				return "upmiddle";
+			} else if (prevState.cardHeight * 0.35 < r - cy) {
+				return "middleup";
+			} else if (prevState.rest == "middle" && a < 15 * Math.PI / 32) {
+				return "right";
+			} else if (prevState.rest == "right" && a > 12 * Math.PI / 32) {
+				return "middle";
+			}
+			return prevState.rest;
+		}
+
+		function stopDrag(e, prevState) {
+			let {a, r, cy} = getPolar(e, prevState);
+			const place = nextPlace(e, prevState);
+			switch (place) {
+				case 'upmiddle':
+					return getUpMiddleState(prevState.cardHeight, cy);
+				case 'middleup':
+					return getMiddleUpState(prevState.cardHeight, cy);
+				case 'right':
+					return getRightState(prevState.index, cy);
+				case 'middle':
+					return getMiddleState(cy);
+				default:
+					throw new Error(place);
+			}
 		}
 
 		window.Hx = window.Hx || {};
