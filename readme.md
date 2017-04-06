@@ -1,5 +1,5 @@
 # planning-deck [![Build Status](https://travis-ci.org/hexacta/planning-deck.svg?branch=master)](https://travis-ci.org/hexacta/planning-deck)  
-> Progressive web app that looks and feels like a deck of planning poker cards. From [Hexacta Innovation Labs](https://showcase.hexacta.com/planning-deck)
+> Progressive web app that looks and feels like a deck of planning poker cards. From [Hexacta Innovation Labs](https://showcase.hexacta.com/planning-deck).
 
 ## Run in development mode
 
