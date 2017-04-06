@@ -13,24 +13,26 @@
         width: 100%;
       }
       
-      .deck {
+      .container {
         position: relative;
         height: 100%;
         width: 100%;
         max-width: 400px;
         margin: auto;
         background-color: #666;
-        /*rgb(10, 172, 142)*/
         overflow: hidden;
-        cursor: grab;
-        cursor: -moz-grab;
-        cursor: -webkit-grab;
         -webkit-touch-callout: none;
         -webkit-user-select: none;
         -khtml-user-select: none;
         -moz-user-select: none;
         -ms-user-select: none;
         user-select: none;
+      }
+      
+      .deck {
+        cursor: grab;
+        cursor: -moz-grab;
+        cursor: -webkit-grab;
       }
       
       .deck:active {
@@ -48,7 +50,6 @@
         left: 15%;
         bottom: -5px;
         will-change: transform;
-        /*transition: transform 0.1s ease-in-out;*/
       }
       
       .card:before {
@@ -62,12 +63,28 @@
         display: table;
         clear: both;
       }
+      
+      .hil {
+        color: #ccc;
+        width: 200px;
+        text-align: center;
+        margin: 10vh auto 0;
+      }
+      
+      .hil a {
+        color: inherit;
+      }
     </style>
 
-    <div class="deck" on-track="handleTrack">
-      <template is="dom-repeat" items="[[cards]]">
-        <hx-card card-index="[[index]]" value="[[item.value]]" name="[[item.name]]" class="card"></hx-card>
-      </template>
+    <div class="container">
+      <div class="hil">An experiment from
+        <a href="https://showcase.hexacta.com">Hexacta Innovation Labs</a>
+      </div>
+      <div class="deck" on-track="handleTrack">
+        <template is="dom-repeat" items="[[cards]]">
+          <hx-card card-index="[[index]]" value="[[item.value]]" name="[[item.name]]" class="card"></hx-card>
+        </template>
+      </div>
     </div>
   </template>
 
@@ -96,7 +113,7 @@
       }
 
       getCard(index) {
-        return this.shadowRoot.querySelector(`.deck hx-card:nth-child(${index + 1})`);
+        return this.shadowRoot.querySelector(`hx-card:nth-child(${index + 1})`);
       }
 
       ready() {
@@ -146,7 +163,7 @@
           }
         }
 
-        console.log(newState);
+        // console.log(newState);
         card.state = Object.assign({}, card.state, newState);
       }
 
@@ -164,7 +181,7 @@
 
         if (card.state.endState) {
           card.addEventListener("transitionend", () => {
-            console.log(card.state.endState);
+            // console.log(card.state.endState);
             card.state = Object.assign({}, card.state, card.state.endState);
             this.update(card);
           }, { once: true });
