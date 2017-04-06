@@ -12,4 +12,10 @@ node_js:
   - '6'
 script:
   - npm run build
-
+deploy:
+  - provider: firebase
+    skip_cleanup: true  
+    token: $FIREBASE_TOKEN
+    on:
+      all_branches: true
+      condition: $TRAVIS_TAG =~ ^v[0-9]+\.[0-9]+\.[0-9]+
