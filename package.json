@@ -15,6 +15,7 @@
     "lint": "eslint . --ext js,html --ignore-path .gitignore",
     "start": "run-p start:polymer start:sync",
     "start:polymer": "polymer serve",
+    "start:prod": "polymer serve build/default",
     "start:sync": "browser-sync start --proxy localhost:8081 --files=\"src/**/*\"",
     "test": "npm run lint && polymer test",
     "build": "polymer build --bundle --js-minify --css-minify --html-minify --add-service-worker",
